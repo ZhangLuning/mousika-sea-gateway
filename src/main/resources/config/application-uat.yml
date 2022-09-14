@@ -1,0 +1,174 @@
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://admin:admin@10.102.210.8:31000/eureka/
+
+dev:
+  ip-range: "10.102.210.8-10.102.210.8"
+
+spring:
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: false # we use gulp + BrowserSync for livereload
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://10.102.100.132:3306/gateway_uat?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false
+    username: gateway_uat
+    password: 'ao^0@RVrmMHhAaKu'
+    hikari:
+      auto-commit: false
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+  redis:
+    host: 10.102.230.237
+    database: 1
+    password: Fx6XIhpWKmBKtqMW
+    port: 6379
+    jedis:
+      pool:
+        max-active: -1
+        max-idle: 5
+        max-wait: -1ms
+        min-idle: 0
+  jackson:
+    serialization.indent_output: true
+    default-property-inclusion: non_null
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 60MB
+      max-request-size: 60MB
+  logging:
+    logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
+      enabled: true
+      host: 10.102.11.17
+      port: 9600
+      queue-size: 512
+  messages:
+    cache-duration: PT1S # 1 second, see the ISO 8601 standard
+  main:
+    lazy-initialization: false
+  thymeleaf:
+    cache: false
+    enable-spring-el-compiler: true
+  zipkin:
+    base-url: http://localhost:9411
+    enabled: false
+    locator:
+      discovery:
+        enabled: true
+  sleuth:
+    sampler:
+      probability: 1.0 # report 100% of traces
+  cloud:
+    gateway:
+      # 自动获取注册中心的服务
+      discovery:
+        locator:
+          enabled: true
+          # 注册中心服务名统一转小写
+          lower-case-service-id: true
+      routes:
+
+server:
+  error:
+    include-exception: true
+    include-message: always
+    include-stacktrace: always
+    include-binding-errors: always
+
+swagger:
+  enable: true
+
+gateway:
+  cors:
+    enabled: true
+  auth2:
+    signature-verification:
+      public-key-endpoint-uri: http://lambda-uaa/oauth/token_key
+      #ttl for public keys to verify JWT tokens (in ms)
+      ttl: 3600000
+      #max. rate at which public keys will be fetched (in ms)
+      public-key-refresh-rate-limit: 10000
+    web-client-configuration:
+      #keep in sync with UAA configuration
+      client-id: web_app
+      secret: changeit
+      # Controls session expiration due to inactivity (ignored for remember-me).
+      # Negative values disable session inactivity expiration.
+      session-timeout-in-seconds: 1800
+      cookie-domain:
+    client-authorization:
+      access-token-uri: http://lambda-uaa/oauth/token
+      token-service-id: lambda-uaa
+      client-id: internal
+      client-secret: internal
+  c-token:
+    client-authorization:
+      single-login-enabled: true
+      #7天换算毫秒（7*24*60*60*1000）
+      ttl: 604800000
+      register-uri: http://cuaa-controller/cuaa-webservice/userLogin/register
+      login-uri: http://cuaa-controller/cuaa-webservice/userLogin/login
+      sms-login-uri: http://cuaa-controller/cuaa-webservice/userLogin/smsLogin
+      wx-login-uri: http://cuaa-controller/cuaa-webservice/userLogin/wxLogin
+      wx-bind-user-uri: http://cuaa-controller/cuaa-webservice/userLogin/wxPhoneBindUser
+  wx-auth:
+    client-authorization:
+      wx-corpid: wx6b9d5fc68f1a67a0
+      wx-token-uri: https://qyapi.weixin.qq.com/cgi-bin/gettoken
+      wx-user-uri: https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo
+  sso-auth:
+    client-authorization:
+      client-id: app_ifs
+      client-secret: 'shfkvseNd5eSoX1b8nnL8aPcceVYmQq7'
+      response-type: code
+      grant-type: authorization_code
+      redirect-uri: 'https://uat-gateway-amp.foton.com.cn/auth/sso/redirect'
+      sso-auth-uri: 'http://testsso1.foton.com.cn/oauth2.0/authorize?client_id=%s&response_type=%s&redirect_uri=%s'
+      sso-token-uri: 'http://testsso1.foton.com.cn/oauth2.0/accessTokenByJson?client_id=%s&client_secret=%s&grant_type=%s&redirect_uri=%s&code=%s'
+      sso-user-uri: 'http://testsso1.foton.com.cn/oauth2.0/profileByJson?%s'
+  api-path-auth:
+    client-authorization:
+      enabled: true
+      auth-2-cache-enabled: true
+      auth-2-cache-ttl: 10
+      # AMP;商用车零售系统;新商用车手机端2B
+      ignore-auth-service-role-ids: ROLE_AMP,32469e00dc2e42eda21fb383920b6800,c241050b907b41a69f8b921a53155941
+  interface-auth:
+    client-authorization:
+      app-id-key-uri: http://lambda-controller/api/app/auth/id/{id}/appkey/{appKey}
+      app-id-key-service-id: lambda-controller
+      ttl: 600000
+
+third:
+  client:
+    - app-id: workflow
+      app-key: $2a$10$A.bONOgxcd6aSynFxbz6nOkHLU3gPQcqWyGu7yKkOyQG7HCVHgCmG
+    - app-id: report
+      app-key: $2a$10$BrrOT1E0wQ40Nz3Z5QTfi.fPfqg90FkYyfZC/cLUutmnhk1wPGvNm
+    - app-id: crds
+      app-key: $2a$10$Z.CrqDkLZYyUGYqeUVfUgeC/noVGTp7ANMRUUApuE2vhCm8LQeA3.
+    - app-id: ccs
+      app-key: $2a$10$ogai346qQQKpOgWWc1F38Obb0qAeMiyLgs2VMhYsnK3NLlPbeBip2
+    - app-id: cls-app
+      app-key: $2a$10$PsnGr6urIyfbp0US1SLyG.xx.F0v1mphZHnqJhw07xYVZCqxKrrBm
+    - app-id: GYZL
+      app-key: $2a$10$dEFtW8yqen.Fp4iYxCzZy.zOfshd0O5.I1lxllenK4TUYkY9kmDUm
+    - app-id: APZL
+      app-key: $2a$10$O/ljaJVTnEwQGzv/71iNG.l9XaXKCr1WAqwZFXwwvnKHroqb6RJ92
+
+redirect:
+  path:
+    - sourcePath: '/lambda-controller/interface/version/getVersionInfo'
+      targetPath: '/mmp-platform/interface/appVersion/getAppVersionUpgrade'
+

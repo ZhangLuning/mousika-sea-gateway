@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: mousika-sea-gateway
+  cloud:
+    nacos:
+      discovery:
+        username: nacos
+        password: nacos
+        #Nacos地址
+        server-addr: localhost:8848
+        #Nacos服务组
+        group: MOUSIKA_SEA_GROUP
+      config:
+        #Nacos地址
+        server-addr: localhost:8848
+        #Nacos服务组
+        group: MOUSIKA_SEA_GROUP
+        #这里我们获取的yaml格式的配置
+        file-extension: yaml
+        refresh-enabled: true
+        auto-refresh: true
+        enable-remote-sync-config: true

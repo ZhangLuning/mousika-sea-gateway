@@ -1,0 +1,24 @@
+spring:
+  cloud:
+    gateway:
+      # 自动获取注册中心的服务
+      discovery:
+        locator:
+          enabled: true
+          # 注册中心服务名统一转小写
+          lower-case-service-id: true
+      routes:
+        - id: mousika-sea-ums
+          uri: lb://mousika-sea-ums
+          predicates:
+            - Path=/mousika-sea-ums/**
+          filters:
+            - StripPrefix=1
+        - id: mousika-sea-order
+          uri: lb://mousika-sea-order
+          predicates:
+            - Path=/mousika-sea-order/**
+          filters:
+            - StripPrefix=1
+
+
